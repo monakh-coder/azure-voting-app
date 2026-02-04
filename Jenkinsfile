@@ -35,6 +35,21 @@ pipeline {
                 }
              }
         }
+        stage('Docker Push') {
+            steps {
+                echo "Running in $WORKSPACE"
+                dir("$WORKSPACE/azure-vite") {
+                    script {
+                        docker.withRegistry('', 'dockerhub') {
+                            def image = docker.build('blackdentech/jenkins-course:2023')
+                            image.push()
+                        }
+                    }
+
+                }
+                // Add deploy steps here
+            }
+        }
     }
     post{
         always {
