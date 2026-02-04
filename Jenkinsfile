@@ -10,7 +10,7 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh 'sudo -n docker compose build'
+                sh 'docker compose build'
                 // Add test steps here
             }
         }
