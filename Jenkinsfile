@@ -8,13 +8,7 @@ pipeline {
                 // Add build steps here
             }
         }
-        stage('Docker Build') {
-            steps {
-                sh 'docker compose build'
-                // Add test steps here
-            }
-        }
-        stage('Docker debug') {
+         stage('Docker debug') {
             steps {
                 sh '''
                     set -x
@@ -30,6 +24,13 @@ pipeline {
                 '''
             }
         }
+        stage('Docker Build') {
+            steps {
+                sh 'docker compose build'
+                // Add test steps here
+            }
+        }
+       
 
     }
 }
