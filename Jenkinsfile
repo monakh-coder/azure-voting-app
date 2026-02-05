@@ -15,8 +15,61 @@ pipeline {
                 // Add test steps here
             }
         }
-       
+        stage('Start App') {
+            steps {
+                sh 'docker compose up -d'
+                // Add deploy steps here
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                sh 'pytest ./tests/test_sample.py'
+                // Add deploy steps here
+            }
+            post {
+                success {
+                    echo "Tests passed successfully."
+                }
+                failure {
+                    echo "Tests failed."
+                }
+             }
+        }
+        stage('Docker Push') {
+            steps {
+                echo "Running in $WORKSPACE"
+                dir("$WORKSPACE/azure-vote") {
+                    script {
+                        docker.withRegistry('', 'dockerhub') {
+                            def image = docker.build('mkdockerpractices/jenkins:2023')
+                            image.push()
+                        }
+                    }
 
+                }
+                // Add deploy steps here
+            }
+        }
+        stage('Run Grype') {
+            agent {label 'jenkins-agent'}
+            steps {
+                grypeScan autoInstall: false, repName: 'grypeReport_${JOB_NAME}_${BUILD_NUMBER}.txt', scanDest: 'registry:mkdockerpractices/jenkins:2023'
+            }
+            post {
+                always {
+                    recordIssues(
+                        tools: [grype()],
+                        aggregatingResults: true,
+                    )
+                }
+            }
+        }
+
+    }
+    post{
+        always {
+            sh 'docker compose down'
+        }
     }
 }
         
