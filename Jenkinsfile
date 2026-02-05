@@ -50,6 +50,21 @@ pipeline {
                 // Add deploy steps here
             }
         }
+        stage('Run Grype') {
+            agent {label 'jenkins-agent'}
+            steps {
+                grypeScan autoInstall: false, repName: 'grypeReport_${JOB_NAME}_${BUILD_NUMBER}.txt', scanDest: 'registry:mkdockerpractices/jenkins:2023'
+            }
+            post {
+                always {
+                    recordIssues(
+                        tools: [grype()],
+                        aggregatingResults: true,
+                    )
+                }
+            }
+        }
+
     }
     post{
         always {
