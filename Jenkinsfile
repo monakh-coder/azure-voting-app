@@ -40,7 +40,7 @@ pipeline {
                 echo "Running in $WORKSPACE"
                 dir("$WORKSPACE/azure-vote") {
                     script {
-                        docker.withRegistry('', 'mkdockerpractices') {
+                        docker.withRegistry('', 'dockerhub') {
                             def image = docker.build('mkdockerpractices/jenkins:2023')
                             image.push()
                         }
